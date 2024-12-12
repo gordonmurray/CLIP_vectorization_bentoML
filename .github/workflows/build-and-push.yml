@@ -20,7 +20,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install BentoML
-      run: pip install bentoml
+      run: pip install transformers Pillow torch bentoml
 
     - name: Log in to AWS ECR
       env:

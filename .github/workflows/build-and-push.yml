@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "service/**"
   workflow_dispatch:
 
 jobs:
@@ -26,14 +28,18 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-ecr-repo-uri>
+        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_URI }}
 
     - name: Build and Containerize BentoML Service
       run: |
         bentoml build
-        bentoml containerize MyService:latest -t <your-ecr-repo-uri>:latest
+        bentoml containerize clip_image_vectorizer:latest -t ${{ secrets.AWS_ECR_URI }}:${{ github.sha }}
 
     - name: Push Docker Image to ECR
       run: |
-        docker push <your-ecr-repo-uri>:latest
+        docker push ${{ secrets.AWS_ECR_URI }}:${{ github.sha }}
+
+    - name: Sanitize Docker Logs
+      run: docker logout

@@ -1,6 +1,8 @@
 # CLIP_vectorization_bentoML
 
-BentoML Service for CLIP Image Vectorization, built using BentoML and pushed to ECR using Github Actions
+BentoML Service for CLIP Image Vectorization, built using BentoML and pushed to ECR.
+
+Ideally I would use Github Actions here, however the model is too big for the storage space provided. I could make a private Runner but its a bit overkill right now for this small project, so pushing from the CLI.
 
 ## Local install
 
@@ -13,8 +15,6 @@ BentoML Service for CLIP Image Vectorization, built using BentoML and pushed to 
    ```bash
    python3 -m pip install transformers Pillow torch bentoml
    ```
-
----
 
 ## Run Local Service
 
@@ -51,9 +51,15 @@ bentoml containerize clip_image_vectorizer:latest -t bentoml:latest
 docker run --rm -p 3000:3000 bentoml:latest
 ```
 
-### Push to ECR
+### Push to ECR and Verify
 
 ```
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPO_URI
-docker push $REPO_URI:$VERSION
+
+docker tag bentoml:latest 016230046494.dkr.ecr.eu-west-1.amazonaws.com/quickvectors-repository:bentoml-latest
+
+docker push 016230046494.dkr.ecr.eu-west-1.amazonaws.com/quickvectors-repository:bentoml-latest
+
+# Verify
+aws ecr list-images --repository-name quickvectors-repository
 ```

@@ -1,0 +1,12 @@
+service: "service:vectorization"
+description: "BentoML Service for CLIP Image Vectorization"
+labels:
+  owner: Gordon Murray
+  project: Image Vectorization
+include:
+  - "*.py"
+python:
+  packages:
+    - transformers
+    - Pillow
+    - torch

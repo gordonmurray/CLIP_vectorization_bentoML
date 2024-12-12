@@ -1,0 +1,39 @@
+name: Build and Push BentoML Service
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install BentoML
+      run: pip install bentoml
+
+    - name: Log in to AWS ECR
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-ecr-repo-uri>
+
+    - name: Build and Containerize BentoML Service
+      run: |
+        bentoml build
+        bentoml containerize MyService:latest -t <your-ecr-repo-uri>:latest
+
+    - name: Push Docker Image to ECR
+      run: |
+        docker push <your-ecr-repo-uri>:latest

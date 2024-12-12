@@ -32,9 +32,6 @@ Ideally I would use Github Actions here, however the model is too big for the st
      curl http://127.0.0.1:3000/metrics
      ```
 
----
-
-
 ## Build a BentoML container image
 
 ```
@@ -45,13 +42,13 @@ bentoml build
 bentoml containerize clip_image_vectorizer:latest -t bentoml:latest
 ```
 
-### Run the container locally
+## Run the container locally
 
 ```
 docker run --rm -p 3000:3000 bentoml:latest
 ```
 
-### Push to ECR and Verify
+## Push to ECR and Verify
 
 ```
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPO_URI
